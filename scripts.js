@@ -1,3 +1,25 @@
+// Home Screen module
+const homescreen = (() => {
+
+    // Hide gameboard and winner
+    const gameboardDisplay = document.querySelector('.game');
+    gameboardDisplay.style.display = "none";
+    const winnerDisplay = document.querySelector('.winnerScreen');
+    winnerDisplay.style.display = "none";
+
+    // Home screen
+    const home_screen = document.querySelector('.home-screen');
+
+    // Play button removes home screen and displays gameboard
+    const playBtn = document.querySelector('.play');
+    playBtn.addEventListener('click', () => {
+        home_screen.style.display = "none";
+        gameboardDisplay.style.display = "flex";
+    });
+    
+})();
+
+
 // Gameboard module
 const gameboard = (() => {
 
@@ -8,7 +30,7 @@ const gameboard = (() => {
 
     const player1 = player('player1', 'X', true, false);
     const player2 = player('player2', 'O', false, false);
-
+ 
     // board array
     let gameboardArray = [];
 
@@ -30,6 +52,23 @@ const gameboard = (() => {
         player2.turn = !player2.turn;
     };
 
+    // Displays Winner Message
+    function showWinner() {
+        // Hide game 
+        const gameDisplay = document.querySelector('.game');
+        gameDisplay.style.display = "none";
+
+        // Get winner message
+        const winnerMsg = document.querySelector('.winner');
+        if (player1.winner == true) winnerMsg.innerHTML = "You Win!";
+        if (player2.winner == true) winnerMsg.innerHTML = "You Lose!";
+        if (player1.winner == false && player2.winner == false) winnerMsg.innerHTML = "Draw!";
+        
+        // Display Winner
+        const displayWinner = document.querySelector('.winnerScreen');
+        displayWinner.style.display = "Flex";
+    }
+
     function checkForWinner() {
         // Arrays that will hold the data-box numbers of the boxes with X's and O's in them
         let x = [];
@@ -49,8 +88,14 @@ const gameboard = (() => {
             }
             // If a winning pattern is in the x or o array return winner
             for (let i = 0; i < winningPatterns.length; i++){
-                if (winningPatterns[i].every(num => x.includes(num))) return player1.winner = true;
-                if (winningPatterns[i].every(num => o.includes(num))) return player2.winner = true;
+                if (winningPatterns[i].every(num => x.includes(num))) {
+                    player1.winner = true;
+                    return showWinner();
+                }
+                if (winningPatterns[i].every(num => o.includes(num))) {
+                    player2.winner = true;
+                    return showWinner();
+                }
             };
         });
     };
@@ -61,7 +106,7 @@ const gameboard = (() => {
             if (player2.turn == true) {
                 // An array that holds all the empty boxes
                 const unusedGameboard = gameboardArray.filter(box => (box.innerText == ""));
-                if (unusedGameboard.length < 1) return console.log("TIE");
+                if (unusedGameboard.length < 1) return showWinner();
 
                 // Random number to select a box to input the ai's symbol
                 let randInt = Math.floor(Math.random() * unusedGameboard.length);
@@ -106,9 +151,8 @@ const gameboard = (() => {
                 aisTurn.runTurn();
             };
         })});
-        
+
     })(); 
 
 })();
-
 
