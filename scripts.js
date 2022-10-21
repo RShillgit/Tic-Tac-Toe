@@ -30,6 +30,11 @@ const gameboard = (() => {
 
     const player1 = player('player1', 'X', true, false);
     const player2 = player('player2', 'O', false, false);
+
+    // Elements
+    const displayWinner = document.querySelector('.winnerScreen');
+    const gameDisplay = document.querySelector('.game');
+    const gameboardBoxes = document.querySelectorAll('.box');
  
     // board array
     let gameboardArray = [];
@@ -52,40 +57,41 @@ const gameboard = (() => {
         player2.turn = !player2.turn;
     };
 
-    // Displays Winner Message
+    // Displays Winner Screen
     function showWinner() {
+
         // Hide game 
-        const gameDisplay = document.querySelector('.game');
         gameDisplay.style.display = "none";
 
-        // Get winner message
+        // Winner message
         const winnerMsg = document.querySelector('.winner');
         if (player1.winner == true) winnerMsg.innerHTML = "You Win!";
         if (player2.winner == true) winnerMsg.innerHTML = "You Lose!";
         if (player1.winner == false && player2.winner == false) winnerMsg.innerHTML = "Draw!";
         
         // Display Winner
-        const displayWinner = document.querySelector('.winnerScreen');
         displayWinner.style.display = "Flex";
-    }
+    };
 
     function checkForWinner() {
         // Arrays that will hold the data-box numbers of the boxes with X's and O's in them
         let x = [];
         let o = [];
-
-        const gameboardBoxes = document.querySelectorAll('.box');
+        
         gameboardBoxes.forEach(box => {
+
             // If box has an X in it, get its data attribute and send it to x array
             if (box.innerText == "X") {
                 const xboxes = box.getAttribute('data-box');
                 x.push(xboxes);
             }
+
             // Else if box has an O in it, get its data attribute and send it to o array
             else if (box.innerText == "O") {
                 const oBoxes = box.getAttribute('data-box');
                 o.push(oBoxes);
             }
+
             // If a winning pattern is in the x or o array return winner
             for (let i = 0; i < winningPatterns.length; i++){
                 if (winningPatterns[i].every(num => x.includes(num))) {
@@ -104,6 +110,7 @@ const gameboard = (() => {
 
         function runTurn() {
             if (player2.turn == true) {
+
                 // An array that holds all the empty boxes
                 const unusedGameboard = gameboardArray.filter(box => (box.innerText == ""));
                 if (unusedGameboard.length < 1) return showWinner();
@@ -111,8 +118,9 @@ const gameboard = (() => {
                 // Random number to select a box to input the ai's symbol
                 let randInt = Math.floor(Math.random() * unusedGameboard.length);
 
-                // DIsplay symbol in the random box 
-                let aiSelection = unusedGameboard[randInt].innerText = player2.symbol;
+                // Display symbol in the random box 
+                unusedGameboard[randInt].style.color = "#FF005C";
+                unusedGameboard[randInt].innerText = player2.symbol;
                 
                 // Check for winnner 
                 checkForWinner();
@@ -127,18 +135,17 @@ const gameboard = (() => {
 
     const playersTurn = (function() {
     
-        // Board boxes
-        const boxes = document.querySelectorAll('.box');
         // Push each box to gameboardArray individually
-        boxes.forEach(box => gameboardArray.push(box));
+        gameboardBoxes.forEach(box => gameboardArray.push(box));
 
         // Event listener for user click
-        boxes.forEach(box => {box.addEventListener('click', (e) => {
-            // If there is a winner simply return
-            if(player1.winner == true) return console.log(`Player 1 Wins`);
-            else if (player2.winner == true) return console.log("Player 2 Wins")
-            // If box is empty and its the users turn 
-            else if (e.target.innerText == '' && player1.turn == true) {
+        gameboardBoxes.forEach(box => {box.addEventListener('click', (e) => {
+
+            // If its the users turn and the box clicked is empty
+            if (e.target.innerText == '' && player1.turn == true) {
+
+                // Fill it with an X
+                e.target.style.color = "#006FFF";
                 box.innerText = player1.symbol;
 
                 // Check for winnner 
@@ -153,6 +160,24 @@ const gameboard = (() => {
         })});
 
     })(); 
+
+    // Replay Button that hides winner screen and displays game again
+    const replayBtn = document.querySelector('.replay');
+    replayBtn.addEventListener('click', () => {
+
+        // Reset players winner to false
+        player1.winner = false;
+        player2.winner = false;
+
+        // Clear Game board 
+        gameboardBoxes.forEach(box => {box.innerText = "";}); 
+
+        // Display game board and hide winner screen
+        displayWinner.style.display = "none";
+        gameDisplay.style.display = "flex";
+
+        return playersTurn;
+    });
 
 })();
 
