@@ -2,12 +2,12 @@
 const gameboard = (() => {
 
     // Player 
-    const player = (name, symbol, turn) => {
-        return {name, symbol, turn};
+    const player = (name, symbol, turn, winner) => {
+        return {name, symbol, turn, winner};
     };
 
-    const player1 = player('player1', 'X', true);
-    const player2 = player('player2', 'O', false);
+    const player1 = player('player1', 'X', true, false);
+    const player2 = player('player2', 'O', false, false);
 
     // board array
     let gameboardArray = [];
@@ -31,7 +31,6 @@ const gameboard = (() => {
     };
 
     function checkForWinner() {
-
         // Arrays that will hold the data-box numbers of the boxes with X's and O's in them
         let x = [];
         let o = [];
@@ -50,19 +49,19 @@ const gameboard = (() => {
             }
             // If a winning pattern is in the x or o array return winner
             for (let i = 0; i < winningPatterns.length; i++){
-                if (winningPatterns[i].every(num => x.includes(num))) return console.log('player 1 wins!')
-                if (winningPatterns[i].every(num => o.includes(num))) return console.log('player 2 wins!')
+                if (winningPatterns[i].every(num => x.includes(num))) return player1.winner = true;
+                if (winningPatterns[i].every(num => o.includes(num))) return player2.winner = true;
             };
         });
     };
 
     const aisTurn = (function() {
-    
-        function runTurn() {
 
+        function runTurn() {
             if (player2.turn == true) {
                 // An array that holds all the empty boxes
                 const unusedGameboard = gameboardArray.filter(box => (box.innerText == ""));
+                if (unusedGameboard.length < 1) return console.log("TIE");
 
                 // Random number to select a box to input the ai's symbol
                 let randInt = Math.floor(Math.random() * unusedGameboard.length);
@@ -76,12 +75,13 @@ const gameboard = (() => {
                 // Switch turns
                 switchTurns()
             };
-        }
-        
+        };
+         
         return {runTurn: runTurn}
     })();
 
     const playersTurn = (function() {
+    
         // Board boxes
         const boxes = document.querySelectorAll('.box');
         // Push each box to gameboardArray individually
@@ -89,8 +89,11 @@ const gameboard = (() => {
 
         // Event listener for user click
         boxes.forEach(box => {box.addEventListener('click', (e) => {
+            // If there is a winner simply return
+            if(player1.winner == true) return console.log(`Player 1 Wins`);
+            else if (player2.winner == true) return console.log("Player 2 Wins")
             // If box is empty and its the users turn 
-            if (e.target.innerText == '' && player1.turn == true) {
+            else if (e.target.innerText == '' && player1.turn == true) {
                 box.innerText = player1.symbol;
 
                 // Check for winnner 
@@ -104,7 +107,6 @@ const gameboard = (() => {
             };
         })});
         
-    return {boxes};
     })(); 
 
 })();
