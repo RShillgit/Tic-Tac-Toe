@@ -66,8 +66,8 @@ const gameboard = (() => {
         // Winner message
         const winnerMsg = document.querySelector('.winner');
         if (player1.winner == true) winnerMsg.innerHTML = "You Win!";
-        if (player2.winner == true) winnerMsg.innerHTML = "You Lose!";
-        if (player1.winner == false && player2.winner == false) winnerMsg.innerHTML = "Draw!";
+        else if (player2.winner == true) winnerMsg.innerHTML = "You Lose!";
+        else if (player1.winner == false && player2.winner == false) winnerMsg.innerHTML = "Draw!";
         
         // Display Winner
         displayWinner.style.display = "Flex";
@@ -98,7 +98,7 @@ const gameboard = (() => {
                     player1.winner = true;
                     return showWinner();
                 }
-                if (winningPatterns[i].every(num => o.includes(num))) {
+                else if (winningPatterns[i].every(num => o.includes(num))) {
                     player2.winner = true;
                     return showWinner();
                 }
@@ -168,6 +168,10 @@ const gameboard = (() => {
         // Reset players winner to false
         player1.winner = false;
         player2.winner = false;
+
+        // Make it the users turn
+        player1.turn = true
+        player2.turn = false
 
         // Clear Game board 
         gameboardBoxes.forEach(box => {box.innerText = "";}); 
